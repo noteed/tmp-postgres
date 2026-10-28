@@ -53,12 +53,13 @@ in {
       '' + (drv.preBuild or "");
       # procps is necessary for the tests, while the postgresql binaries are
       # necessary for both the tests and for normal operations. This means
-      # that we could specify postgresql_11 in libraryToolDepends, but users
+      # that we could specify postgresql in libraryToolDepends, but users
       # of this package might want a different version.
-      # In particular, all the tests pass with PostgreSQL 14, except the one
-      # called "can support backup and restore", which uses a recovery.conf
-      # file. Such a file is no longer supported in version 12 and above.
-      testToolDepends = drv.testToolDepends or [] ++ [nixpkgs.buildPackages.postgresql_11 nixpkgs.procps];
+      testToolDepends = drv.testToolDepends or [] ++ [nixpkgs.buildPackages.postgresql nixpkgs.procps];
+      # All the tests pass with the default PostgreSQL, except the one called
+      # "can support backup and restore", which uses a recovery.conf file.
+      # Such a file is no longer supported in version 12 and above.
+      testFlags = drv.testFlags or [] ++ [ "--skip" "can support backup and restore" ];
     });
   };
 }
